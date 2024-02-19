@@ -46,9 +46,11 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build && cp build/index.html build/404.html",
+    "build": "react-scripts build && cp build/index.html build/404.html && npm run build-privacy",
+    "build-privacy": "markdown-to-html-cli --source privacy.md --output build/privacy.html",
     "test": "react-scripts test --transformIgnorePatterns 'node_modules/(?!(@ionic/react|@ionic/react-router|@ionic/core|@stencil/core|ionicons)/)'",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "assets": "npx @capacitor/assets generate --iconBackgroundColor '#1c833c' --iconBackgroundColorDark '#1c833c' --splashBackgroundColor '#1c833c' --splashBackgroundColorDark '#1c833c'"
   },
   "eslintConfig": {
     "extends": [
@@ -69,7 +71,9 @@
     ]
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.4",
     "@capacitor/cli": "^5.0.0",
+    "markdown-to-html-cli": "^4.1.0",
     "prettier": "^2.8.1"
   },
   "description": "An Ionic project"
