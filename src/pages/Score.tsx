@@ -11,7 +11,9 @@ import {
   IonItem,
   IonLabel,
   IonList,
+  IonListHeader,
   IonPage,
+  IonText,
   IonTitle,
   IonToolbar,
   useIonPopover,
@@ -23,7 +25,7 @@ import {
 import './Score.css'
 import { OverlayEventDetail } from '@ionic/core/components'
 
-import { add, ellipsisVertical, ellipsisHorizontal } from 'ionicons/icons'
+import { add, ellipsisVertical, ellipsisHorizontal, peopleOutline } from 'ionicons/icons'
 import { useRef, useState } from 'react'
 import { useGame } from '../hooks/useGame'
 
@@ -43,26 +45,21 @@ export interface Game {
   players: string[]
   rounds: Round[]
   start_time: Date
+  end_time?: Date
 }
 
 interface IMenuPopoverProps {
   onDismiss: (data?: any, role?: string | undefined) => void
 }
-const Popover: React.FC<IMenuPopoverProps> = (props) => {
-  const { onDismiss } = props
-
-  return (
-    <IonContent>
-      <IonList>
-        <IonItem button={true}>
-          <IonLabel onClick={(e) => onDismiss(null, 'reset')}>
-            Reset Game
-          </IonLabel>
-        </IonItem>
-      </IonList>
-    </IonContent>
-  )
-}
+const Popover: React.FC<IMenuPopoverProps> = ({ onDismiss }) => (
+  <IonContent>
+    <IonList>
+      <IonItem button onClick={() => onDismiss(null, 'reset')}>
+        <IonLabel>Reset Game</IonLabel>
+      </IonItem>
+    </IonList>
+  </IonContent>
+)
 
 const Score: React.FC = () => {
   const [presentMenu, dismissMenu] = useIonPopover(Popover, {
@@ -90,7 +87,7 @@ const Score: React.FC = () => {
           .map((round) => round.scores[playerName] ?? 0)
           .reduce(
             (accumulator, currentValue) => accumulator + currentValue,
-            0
+            0,
           ) ?? 0
       )
     } catch (err) {
@@ -126,78 +123,115 @@ const Score: React.FC = () => {
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonTitle>Blitz Score</IonTitle>
-          <IonBadge slot="end">{game.rounds.length}</IonBadge>
+          <IonTitle>Dutch Blitz</IonTitle>
           <IonButtons slot="end">
+            {game.rounds.length > 0 && (
+              <IonBadge color="primary" className="round-badge">
+                {game.rounds.length} {game.rounds.length === 1 ? 'Round' : 'Rounds'}
+              </IonBadge>
+            )}
             <IonButton
               onClick={(e: any) =>
                 presentMenu({
                   event: e,
                   onDidDismiss: (e: CustomEvent) => {
-                    if (e.detail.role === 'reset') {
-                      newGame()
-                    }
+                    if (e.detail.role === 'reset') newGame()
                   },
                 })
               }
             >
-              <IonIcon ios={ellipsisHorizontal} md={ellipsisVertical}></IonIcon>
+              <IonIcon ios={ellipsisHorizontal} md={ellipsisVertical} />
             </IonButton>
           </IonButtons>
         </IonToolbar>
       </IonHeader>
       <IonContent>
-        <IonList>
-          {game.players
-            .sort((a, b) => calculatePlayerScore(b) - calculatePlayerScore(a))
-            .map((playerName, index) => (
-              <IonItem
-                key={index}
-                onClick={() => {
-                  presentAlert({
-                    header: `Remove ${playerName}?`,
-                    buttons: [
-                      'Cancel',
-                      {
-                        text: 'Remove',
-                        handler: (data) => removePlayer(playerName),
-                      },
-                    ],
-                  })
-                }}
-              >
-                <IonLabel>{playerName}</IonLabel>
-                <IonBadge slot="end">
-                  {calculatePlayerScore(playerName)}
-                </IonBadge>
-              </IonItem>
-            ))}
-        </IonList>
+        {game.players.length === 0 ? (
+          <div className="empty-state ion-padding ion-text-center">
+            <IonIcon icon={peopleOutline} className="empty-state-icon" color="medium" />
+            <IonText color="medium">
+              <h2 className="empty-state-title">No Players Yet</h2>
+              <p>Add players below to start tracking scores.</p>
+            </IonText>
+          </div>
+        ) : (
+          <IonList>
+            {[...game.players]
+              .sort((a, b) => calculatePlayerScore(b) - calculatePlayerScore(a))
+              .map((playerName, index) => {
+                const score = calculatePlayerScore(playerName)
+                const isLeading = index === 0 && game.rounds.length > 0
+                const hasRounds = game.rounds.length > 0
+                const medalEmoji = hasRounds
+                  ? index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : null
+                  : null
+                return (
+                  <IonItem
+                    key={playerName}
+                    button
+                    detail={false}
+                    className={`player-item${isLeading ? ' player-leading' : ''}`}
+                    onClick={() =>
+                      presentAlert({
+                        header: `Remove ${playerName}?`,
+                        buttons: [
+                          'Cancel',
+                          {
+                            text: 'Remove',
+                            role: 'destructive',
+                            handler: () => removePlayer(playerName),
+                          },
+                        ],
+                      })
+                    }
+                  >
+                    <div slot="start" className="rank-indicator">
+                      {medalEmoji ?? <span className="rank-number">{index + 1}</span>}
+                    </div>
+                    <IonLabel>
+                      <h2 className="player-name">{playerName}</h2>
+                    </IonLabel>
+                    <div
+                      slot="end"
+                      className={`player-score ${
+                        score < 0 ? 'score-negative' : score === 0 ? 'score-zero' : 'score-positive'
+                      }`}
+                    >
+                      {score}
+                    </div>
+                  </IonItem>
+                )
+              })}
+          </IonList>
+        )}
 
-        <IonButton
-          className="ion-padding"
-          onClick={() =>
-            presentAlert({
-              header: 'Add New Player',
-              buttons: [
-                'Cancel',
-                {
-                  text: 'Save',
-                  handler: (data) => addPlayer(data.name),
-                },
-              ],
-              inputs: [
-                {
-                  id: 'name',
-                  name: 'name',
-                  placeholder: 'Name',
-                },
-              ],
-            })
-          }
-        >
-          Add Player
-        </IonButton>
+        <div className="ion-padding">
+          <IonButton
+            expand="block"
+            fill="outline"
+            onClick={() =>
+              presentAlert({
+                header: 'Add New Player',
+                buttons: [
+                  'Cancel',
+                  {
+                    text: 'Add',
+                    handler: (data) => addPlayer(data.name),
+                  },
+                ],
+                inputs: [
+                  {
+                    id: 'name',
+                    name: 'name',
+                    placeholder: 'Player name',
+                  },
+                ],
+              })
+            }
+          >
+            Add Player
+          </IonButton>
+        </div>
 
         <IonModal
           ref={modal}
@@ -217,7 +251,7 @@ const Score: React.FC = () => {
               <IonTitle>Add Round</IonTitle>
               <IonButtons slot="end">
                 <IonButton
-                  strong={true}
+                  strong
                   onClick={() => save()}
                   disabled={!canSaveRound()}
                 >
@@ -226,45 +260,56 @@ const Score: React.FC = () => {
               </IonButtons>
             </IonToolbar>
           </IonHeader>
-          <IonContent className="ion-padding">
-            <h1>Scores</h1>
-            <IonList>
-              {game.players.map((playerName) => (
-                <IonItem
-                  key={playerName}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}
-                >
-                  <IonLabel>{playerName}</IonLabel>
-                  <IonInput
-                    slot="end"
-                    type="number"
-                    value={round.scores[playerName]}
-                    onIonInput={(ev) => {
-                      const value = (ev.target as HTMLIonInputElement)
-                        .value as string
-
-                      setRound((oldRound) => {
+          <IonContent>
+            <IonListHeader className="modal-section-header">
+              <IonLabel>
+                Scores
+                <p>Enter each player's card count for this round</p>
+              </IonLabel>
+            </IonListHeader>
+            <IonList inset>
+              {game.players.map((playerName) => {
+                const currentTotal = calculatePlayerScore(playerName)
+                return (
+                  <IonItem key={playerName}>
+                    <IonLabel>
+                      {playerName}
+                      <p>{currentTotal} pts total</p>
+                    </IonLabel>
+                    <IonInput
+                      className="score-input"
+                      slot="end"
+                      type="number"
+                      inputmode="decimal"
+                      placeholder="0"
+                      value={round.scores[playerName] ?? ''}
+                      onIonInput={(ev) => {
+                        const value = (ev.target as HTMLIonInputElement)
+                          .value as string
                         const number = parseFloat(value)
-
-                        if (!isNaN(number)) {
-                          oldRound.scores[playerName] = number
-                        }
-
-                        return {
-                          ...oldRound,
-                        }
-                      })
-                    }}
-                  ></IonInput>
-                </IonItem>
-              ))}
+                        setRound((oldRound) => {
+                          const newScores = { ...oldRound.scores }
+                          if (isNaN(number)) {
+                            delete newScores[playerName]
+                          } else {
+                            newScores[playerName] = number
+                          }
+                          return { ...oldRound, scores: newScores }
+                        })
+                      }}
+                    />
+                  </IonItem>
+                )
+              })}
             </IonList>
 
-            <h1>Blitzer</h1>
-            <IonList>
+            <IonListHeader className="modal-section-header">
+              <IonLabel>
+                Blitzer
+                <p>Who went out first?</p>
+              </IonLabel>
+            </IonListHeader>
+            <IonList inset>
               <IonRadioGroup
                 value={round.blitzer}
                 onIonChange={(ev) =>
@@ -276,8 +321,9 @@ const Score: React.FC = () => {
               >
                 {game.players.map((playerName) => (
                   <IonItem key={playerName}>
-                    <IonLabel>{playerName}</IonLabel>
-                    <IonRadio slot="end" value={playerName}></IonRadio>
+                    <IonRadio value={playerName} justify="start">
+                      {playerName}
+                    </IonRadio>
                   </IonItem>
                 ))}
               </IonRadioGroup>
@@ -287,8 +333,8 @@ const Score: React.FC = () => {
       </IonContent>
 
       <IonFab slot="fixed" vertical="bottom" horizontal="end">
-        <IonFabButton id="open-modal">
-          <IonIcon icon={add}></IonIcon>
+        <IonFabButton id="open-modal" disabled={game.players.length === 0}>
+          <IonIcon icon={add} />
         </IonFabButton>
       </IonFab>
     </IonPage>

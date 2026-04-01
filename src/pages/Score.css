@@ -1,0 +1,100 @@
+.empty-state {
+  margin-top: 64px;
+}
+
+.empty-state-icon {
+  font-size: 4rem;
+  display: block;
+  margin-bottom: 12px;
+}
+
+.empty-state-title {
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+/* ─── Player list ───────────────────────────────── */
+
+.player-item {
+  --min-height: 68px;
+  --padding-start: 16px;
+  --inner-padding-end: 16px;
+}
+
+.player-leading {
+  --background: rgba(22, 163, 74, 0.06);
+  border-left: 3px solid var(--ion-color-primary);
+}
+
+.rank-indicator {
+  font-size: 1.4rem;
+  min-width: 2rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+}
+
+.rank-number {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--ion-color-medium);
+  min-width: 24px;
+  text-align: center;
+}
+
+.player-name {
+  font-size: 1.05rem !important;
+  font-weight: 600 !important;
+}
+
+.player-score {
+  font-size: 1.6rem;
+  font-weight: 700;
+  min-width: 48px;
+  text-align: right;
+  line-height: 1;
+}
+
+.score-positive {
+  color: var(--ion-color-primary);
+}
+
+.score-negative {
+  color: var(--ion-color-danger);
+}
+
+.score-zero {
+  color: var(--ion-color-medium);
+}
+
+/* ─── Round badge in toolbar ────────────────────── */
+
+.round-badge {
+  margin-right: 4px;
+  pointer-events: none;
+  border-radius: 20px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+}
+
+/* ─── Add Round modal ────────────────────────────── */
+
+.modal-section-header {
+  margin-top: 16px;
+}
+
+.modal-section-header p {
+  font-size: 0.8em;
+  color: var(--ion-color-medium);
+  margin-top: 2px;
+  font-weight: 400;
+}
+
+.score-input {
+  min-width: 90px;
+  text-align: right;
+}
+

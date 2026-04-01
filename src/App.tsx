@@ -10,9 +10,11 @@ import {
   setupIonicReact,
 } from '@ionic/react'
 import { IonReactRouter } from '@ionic/react-router'
-import { clipboard, statsChart } from 'ionicons/icons'
+import { clipboard, statsChart, time } from 'ionicons/icons'
 import Score from './pages/Score'
 import Stats from './pages/Stats'
+import History from './pages/History'
+import { GameProvider } from './context/GameContext'
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css'
@@ -37,6 +39,7 @@ setupIonicReact()
 
 const App: React.FC = () => (
   <IonApp>
+    <GameProvider>
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
@@ -45,6 +48,9 @@ const App: React.FC = () => (
           </Route>
           <Route exact path="/stats">
             <Stats />
+          </Route>
+          <Route exact path="/history">
+            <History />
           </Route>
           <Route exact path="/">
             <Redirect to="/score" />
@@ -59,9 +65,14 @@ const App: React.FC = () => (
             <IonIcon icon={statsChart} />
             <IonLabel>Stats</IonLabel>
           </IonTabButton>
+          <IonTabButton tab="history" href="/history">
+            <IonIcon icon={time} />
+            <IonLabel>History</IonLabel>
+          </IonTabButton>
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
+    </GameProvider>
   </IonApp>
 )
 
