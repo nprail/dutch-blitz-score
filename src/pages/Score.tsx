@@ -55,7 +55,7 @@ const Popover: React.FC<IMenuPopoverProps> = (props) => {
     <IonContent>
       <IonList>
         <IonItem button={true}>
-          <IonLabel onClick={(e) => onDismiss(null, 'reset')}>
+          <IonLabel onClick={() => onDismiss(null, 'reset')}>
             Reset Game
           </IonLabel>
         </IonItem>
@@ -160,7 +160,7 @@ const Score: React.FC = () => {
                       'Cancel',
                       {
                         text: 'Remove',
-                        handler: (data) => removePlayer(playerName),
+                        handler: () => removePlayer(playerName),
                       },
                     ],
                   })

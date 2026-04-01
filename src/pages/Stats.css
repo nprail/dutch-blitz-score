@@ -1,0 +1,35 @@
+.stat-value {
+  font-size: 1.8rem;
+  font-weight: bold;
+  color: var(--ion-color-primary);
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--ion-color-medium);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.stat-leader {
+  font-size: 1.2rem;
+  word-break: break-word;
+}
+
+.rank-badge {
+  font-size: 1.1rem;
+  font-weight: bold;
+  min-width: 1.5rem;
+  text-align: center;
+}
+
+.blitz-chip {
+  font-size: 0.7rem;
+  height: 1.4rem;
+  margin-left: 4px;
+}
+
+.blitz-chip-small {
+  font-size: 0.7rem;
+  height: 1.3rem;
+}
