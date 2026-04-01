@@ -12,7 +12,6 @@ import {
   IonLabel,
   IonList,
   IonListHeader,
-  IonNote,
   IonPage,
   IonText,
   IonTitle,
@@ -26,7 +25,7 @@ import {
 import './Score.css'
 import { OverlayEventDetail } from '@ionic/core/components'
 
-import { add, ellipsisVertical, ellipsisHorizontal, trophy } from 'ionicons/icons'
+import { add, ellipsisVertical, ellipsisHorizontal, peopleOutline } from 'ionicons/icons'
 import { useRef, useState } from 'react'
 import { useGame } from '../hooks/useGame'
 
@@ -149,8 +148,10 @@ const Score: React.FC = () => {
       <IonContent>
         {game.players.length === 0 ? (
           <div className="empty-state ion-padding ion-text-center">
+            <IonIcon icon={peopleOutline} className="empty-state-icon" color="medium" />
             <IonText color="medium">
-              <p>No players yet. Add players to start a game.</p>
+              <h2 className="empty-state-title">No Players Yet</h2>
+              <p>Add players below to start tracking scores.</p>
             </IonText>
           </div>
         ) : (
@@ -159,11 +160,17 @@ const Score: React.FC = () => {
               .sort((a, b) => calculatePlayerScore(b) - calculatePlayerScore(a))
               .map((playerName, index) => {
                 const score = calculatePlayerScore(playerName)
+                const isLeading = index === 0 && game.rounds.length > 0
+                const hasRounds = game.rounds.length > 0
+                const medalEmoji = hasRounds
+                  ? index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : null
+                  : null
                 return (
                   <IonItem
                     key={playerName}
                     button
                     detail={false}
+                    className={`player-item${isLeading ? ' player-leading' : ''}`}
                     onClick={() =>
                       presentAlert({
                         header: `Remove ${playerName}?`,
@@ -178,19 +185,20 @@ const Score: React.FC = () => {
                       })
                     }
                   >
-                    <IonNote slot="start" className="rank-number">
-                      {index + 1}
-                    </IonNote>
-                    {index === 0 && game.rounds.length > 0 && (
-                      <IonIcon icon={trophy} color="warning" slot="start" />
-                    )}
-                    <IonLabel>{playerName}</IonLabel>
-                    <IonBadge
+                    <div slot="start" className="rank-indicator">
+                      {medalEmoji ?? <span className="rank-number">{index + 1}</span>}
+                    </div>
+                    <IonLabel>
+                      <h2 className="player-name">{playerName}</h2>
+                    </IonLabel>
+                    <div
                       slot="end"
-                      color={score < 0 ? 'danger' : score === 0 ? 'medium' : 'primary'}
+                      className={`player-score ${
+                        score < 0 ? 'score-negative' : score === 0 ? 'score-zero' : 'score-positive'
+                      }`}
                     >
                       {score}
-                    </IonBadge>
+                    </div>
                   </IonItem>
                 )
               })}

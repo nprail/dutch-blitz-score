@@ -3,14 +3,14 @@ http://ionicframework.com/docs/theming/ */
 
 /** Ionic CSS Variables **/
 :root {
-  --ion-color-primary: #1c833c;
-  --ion-color-primary-rgb: 28, 131, 60;
+  --ion-color-primary: #16a34a;
+  --ion-color-primary-rgb: 22, 163, 74;
   --ion-color-primary-contrast: #ffffff;
   --ion-color-primary-contrast-rgb: 255, 255, 255;
-  --ion-color-primary-shade: #197335;
-  --ion-color-primary-tint: #338f50;
+  --ion-color-primary-shade: #15803d;
+  --ion-color-primary-tint: #4ade80;
 
-  --ion-color-secondary: #3c779c;
+  --ion-color-secondary: #0ea5e9;
   --ion-color-secondary-rgb: 60, 119, 156;
   --ion-color-secondary-contrast: #ffffff;
   --ion-color-secondary-contrast-rgb: 255, 255, 255;
@@ -65,6 +65,30 @@ http://ionicframework.com/docs/theming/ */
   --ion-color-dark-contrast-rgb: 255, 255, 255;
   --ion-color-dark-shade: #1e2023;
   --ion-color-dark-tint: #383a3e;
+
+  /* App custom design tokens */
+  --blitz-rank-gold: #f59e0b;
+  --blitz-rank-silver: #9ca3af;
+  --blitz-rank-bronze: #b45309;
+  --blitz-shadow-card: 0 2px 20px rgba(0, 0, 0, 0.07);
+  --blitz-shadow-tab: 0 -4px 20px rgba(0, 0, 0, 0.06);
+  --blitz-card-radius: 16px;
+}
+
+/* ─── Global component overrides ─────────────────── */
+
+ion-card {
+  border-radius: var(--blitz-card-radius);
+  box-shadow: var(--blitz-shadow-card);
+}
+
+ion-tab-bar {
+  box-shadow: var(--blitz-shadow-tab);
+}
+
+ion-list.list-inset {
+  border-radius: 14px;
+  overflow: hidden;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -74,19 +98,19 @@ http://ionicframework.com/docs/theming/ */
    */
 
   body {
-    --ion-color-primary: #1c833c;
-    --ion-color-primary-rgb: 28, 131, 60;
-    --ion-color-primary-contrast: #ffffff;
-    --ion-color-primary-contrast-rgb: 255, 255, 255;
-    --ion-color-primary-shade: #197335;
-    --ion-color-primary-tint: #338f50;
+    --ion-color-primary: #4ade80;
+    --ion-color-primary-rgb: 74, 222, 128;
+    --ion-color-primary-contrast: #000000;
+    --ion-color-primary-contrast-rgb: 0, 0, 0;
+    --ion-color-primary-shade: #16a34a;
+    --ion-color-primary-tint: #86efac;
 
-    --ion-color-secondary: #3c779c;
-    --ion-color-secondary-rgb: 60, 119, 156;
-    --ion-color-secondary-contrast: #ffffff;
-    --ion-color-secondary-contrast-rgb: 255, 255, 255;
-    --ion-color-secondary-shade: #356989;
-    --ion-color-secondary-tint: #5085a6;
+    --ion-color-secondary: #38bdf8;
+    --ion-color-secondary-rgb: 56, 189, 248;
+    --ion-color-secondary-contrast: #000000;
+    --ion-color-secondary-contrast-rgb: 0, 0, 0;
+    --ion-color-secondary-shade: #0ea5e9;
+    --ion-color-secondary-tint: #7dd3fc;
 
     --ion-color-tertiary: #6a64ff;
     --ion-color-tertiary-rgb: 106, 100, 255;
@@ -172,7 +196,11 @@ http://ionicframework.com/docs/theming/ */
 
     --ion-item-background: #000000;
 
-    --ion-card-background: #1c1c1d;
+    --ion-card-background: #1c1c1e;
+
+    /* Dark-mode custom tokens */
+    --blitz-shadow-card: 0 2px 20px rgba(0, 0, 0, 0.35);
+    --blitz-shadow-tab: 0 -4px 20px rgba(0, 0, 0, 0.3);
   }
 
   .ios ion-modal {
@@ -217,10 +245,13 @@ http://ionicframework.com/docs/theming/ */
 
     --ion-item-background: #1e1e1e;
 
-    --ion-toolbar-background: #1f1f1f;
+    --ion-toolbar-background: #1a1a1a;
 
-    --ion-tab-bar-background: #1f1f1f;
+    --ion-tab-bar-background: #1a1a1a;
 
-    --ion-card-background: #1e1e1e;
+    --ion-card-background: #252525;
+
+    /* Dark-mode custom tokens */
+    --blitz-shadow-card: 0 2px 20px rgba(0, 0, 0, 0.4);
+    --blitz-shadow-tab: 0 -4px 20px rgba(0, 0, 0, 0.35);
   }
-}

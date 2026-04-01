@@ -149,14 +149,18 @@ const History: React.FC = () => {
             const winner = getGameWinner(pastGame)
             return (
               <IonAccordion key={pastGame.id} value={String(pastGame.id)}>
-                <IonItem slot="header">
+                <IonItem slot="header" className="history-accordion-header">
                   <IonLabel>
-                    <h2>{formatDate(pastGame.start_time)}</h2>
+                    <h2 className="history-date">{formatDate(pastGame.start_time)}</h2>
                     <p>
-                      {pastGame.rounds.length} rounds ·{' '}
+                      {pastGame.rounds.length} {pastGame.rounds.length === 1 ? 'round' : 'rounds'} ·{' '}
                       {pastGame.players.join(', ')}
                     </p>
-                    {winner && <p>Winner: {winner}</p>}
+                    {winner && (
+                      <p className="history-winner">
+                        🏆 {winner}
+                      </p>
+                    )}
                   </IonLabel>
                 </IonItem>
                 <div slot="content">

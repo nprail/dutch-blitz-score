@@ -1,32 +1,89 @@
+/* ─── Summary card ───────────────────────────────── */
+
+.summary-card {
+  border-top: 4px solid var(--ion-color-primary);
+}
+
 .stat-value {
-  font-size: 1.8rem;
-  font-weight: bold;
+  font-size: 2rem;
+  font-weight: 800;
   color: var(--ion-color-primary);
+  line-height: 1.1;
 }
 
 .stat-label {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   color: var(--ion-color-medium);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.08em;
+  margin-top: 2px;
 }
 
 .stat-leader {
-  font-size: 1.2rem;
+  font-size: 1.15rem;
+  font-weight: 700;
   word-break: break-word;
+  color: var(--ion-color-primary);
+}
+
+/* ─── Leaderboard ────────────────────────────────── */
+
+.leaderboard-card {
+  border-top: 4px solid var(--blitz-rank-gold);
+}
+
+.leaderboard-item {
+  --min-height: 64px;
+}
+
+.rank-top-1 {
+  --background: rgba(245, 158, 11, 0.05);
+}
+
+.rank-top-2 {
+  --background: rgba(156, 163, 175, 0.05);
+}
+
+.rank-top-3 {
+  --background: rgba(180, 83, 9, 0.05);
+}
+
+.rank-badge-container {
+  font-size: 1.4rem;
+  min-width: 2rem;
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
 }
 
 .rank-badge {
-  font-size: 1.1rem;
-  font-weight: bold;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ion-color-medium);
   min-width: 1.5rem;
   text-align: center;
+}
+
+.leaderboard-end {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.leaderboard-score {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ion-color-primary);
+  line-height: 1;
 }
 
 .blitz-chip {
   font-size: 0.7rem;
   height: 1.4rem;
-  margin-left: 4px;
+  margin: 0;
 }
 
 .blitz-chip-small {

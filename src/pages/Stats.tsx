@@ -1,5 +1,4 @@
 import {
-  IonBadge,
   IonCard,
   IonCardContent,
   IonCardHeader,
@@ -12,7 +11,6 @@ import {
   IonItem,
   IonLabel,
   IonList,
-  IonNote,
   IonPage,
   IonRow,
   IonTitle,
@@ -131,7 +129,7 @@ const Stats: React.FC = () => {
           </IonToolbar>
         </IonHeader>
 
-        <IonCard>
+        <IonCard className="summary-card">
           <IonCardHeader>
             <IonCardTitle>All-Time Summary</IonCardTitle>
           </IonCardHeader>
@@ -157,16 +155,18 @@ const Stats: React.FC = () => {
           </IonCardContent>
         </IonCard>
 
-        <IonCard>
+        <IonCard className="leaderboard-card">
           <IonCardHeader>
             <IonCardTitle>Leaderboard</IonCardTitle>
           </IonCardHeader>
           <IonList lines="full">
             {sortedPlayers.map((playerName, index) => (
-              <IonItem key={playerName}>
-                <IonNote slot="start" className="rank-badge">
-                  {index + 1}
-                </IonNote>
+              <IonItem key={playerName} className={`leaderboard-item${index < 3 ? ` rank-top-${index + 1}` : ''}`}>
+                <div slot="start" className="rank-badge-container">
+                  {index === 0 ? '🥇' : index === 1 ? '🥈' : index === 2 ? '🥉' : (
+                    <span className="rank-badge">{index + 1}</span>
+                  )}
+                </div>
                 <IonLabel>
                   <h2>{playerName}</h2>
                   <p>
@@ -175,10 +175,8 @@ const Stats: React.FC = () => {
                     {getPlayerWins(playerName)} wins
                   </p>
                 </IonLabel>
-                <div slot="end" className="ion-text-right">
-                  <IonBadge color="primary">
-                    {getPlayerTotalScore(playerName)}
-                  </IonBadge>
+                <div slot="end" className="leaderboard-end">
+                  <div className="leaderboard-score">{getPlayerTotalScore(playerName)}</div>
                   {getPlayerBlitzes(playerName) > 0 && (
                     <IonChip color="success" className="blitz-chip">
                       ⚡ {getPlayerBlitzes(playerName)}
