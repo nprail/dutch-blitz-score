@@ -29,7 +29,7 @@ const Stats: React.FC = () => {
   const getPlayerTotal = (playerName: string): number => {
     return game.rounds.reduce(
       (sum, round) => sum + (round.scores[playerName] ?? 0),
-      0
+      0,
     )
   }
 
@@ -48,7 +48,7 @@ const Stats: React.FC = () => {
   }
 
   const sortedPlayers = [...game.players].sort(
-    (a, b) => getPlayerTotal(b) - getPlayerTotal(a)
+    (a, b) => getPlayerTotal(b) - getPlayerTotal(a),
   )
 
   const leader = sortedPlayers[0]
@@ -142,7 +142,9 @@ const Stats: React.FC = () => {
                   </p>
                 </IonLabel>
                 <div slot="end" className="ion-text-right">
-                  <IonBadge color="primary">{getPlayerTotal(playerName)}</IonBadge>
+                  <IonBadge color="primary">
+                    {getPlayerTotal(playerName)}
+                  </IonBadge>
                   {getBlitzCount(playerName) > 0 && (
                     <IonChip color="success" className="blitz-chip">
                       ⚡ {getBlitzCount(playerName)}

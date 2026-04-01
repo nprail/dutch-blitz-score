@@ -90,7 +90,7 @@ const Score: React.FC = () => {
           .map((round) => round.scores[playerName] ?? 0)
           .reduce(
             (accumulator, currentValue) => accumulator + currentValue,
-            0
+            0,
           ) ?? 0
       )
     } catch (err) {
