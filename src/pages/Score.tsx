@@ -43,6 +43,7 @@ export interface Game {
   players: string[]
   rounds: Round[]
   start_time: Date
+  end_time?: Date
 }
 
 interface IMenuPopoverProps {

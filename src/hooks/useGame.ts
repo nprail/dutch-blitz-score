@@ -4,6 +4,7 @@ import { Preferences } from '@capacitor/preferences'
 import { Game, Round } from '../pages/Score'
 
 const GAME_DATA_KEY = '_blitz_game_data' as const
+const GAME_HISTORY_KEY = '_blitz_game_history' as const
 
 const initGame = (players?: string[]): Game => ({
   id: generateId(),
@@ -16,14 +17,20 @@ const generateId = (): number => Math.round(Math.random() * 1000)
 
 export function useGame() {
   const [game, setGame] = useState<Game>(initGame())
+  const [history, setHistory] = useState<Game[]>([])
 
   useEffect(() => {
     const loadSaved = async () => {
-      const { value } = await Preferences.get({ key: GAME_DATA_KEY })
+      const [gameResult, historyResult] = await Promise.all([
+        Preferences.get({ key: GAME_DATA_KEY }),
+        Preferences.get({ key: GAME_HISTORY_KEY }),
+      ])
 
-      const gameInPreferences = (value ? JSON.parse(value) : initGame()) as Game
+      const gameInPreferences = (gameResult.value ? JSON.parse(gameResult.value) : initGame()) as Game
+      const historyInPreferences = (historyResult.value ? JSON.parse(historyResult.value) : []) as Game[]
 
       setGame(gameInPreferences)
+      setHistory(historyInPreferences)
     }
     loadSaved()
   }, [])
@@ -34,12 +41,31 @@ export function useGame() {
       value: JSON.stringify(game),
     })
 
-  const newGame = () => {
-    setGame((oldGame) => {
-      const newGame = initGame(oldGame.players)
-      persist(newGame)
+  const persistHistory = (history: Game[]) =>
+    Preferences.set({
+      key: GAME_HISTORY_KEY,
+      value: JSON.stringify(history),
+    })
 
-      return newGame
+  const newGame = () => {
+    if (game.rounds.length > 0) {
+      const completedGame: Game = { ...game, end_time: new Date() }
+      setHistory((oldHistory) => {
+        const updatedHistory = [...oldHistory, completedGame]
+        persistHistory(updatedHistory)
+        return updatedHistory
+      })
+    }
+    const ng = initGame(game.players)
+    persist(ng)
+    setGame(ng)
+  }
+
+  const deleteGame = (gameId: number) => {
+    setHistory((oldHistory) => {
+      const updatedHistory = oldHistory.filter((g) => g.id !== gameId)
+      persistHistory(updatedHistory)
+      return updatedHistory
     })
   }
 
@@ -105,6 +131,9 @@ export function useGame() {
     newGame,
     addPlayer,
     removePlayer,
+    deleteGame,
     game,
+    history,
   }
 }
+

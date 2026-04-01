@@ -1,0 +1,29 @@
+.game-detail {
+  padding: 0;
+}
+
+.round-history-title {
+  padding: 8px 16px 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--ion-color-medium);
+  margin: 0;
+}
+
+.round-history {
+  padding-bottom: 4px;
+}
+
+.delete-row {
+  display: flex;
+  justify-content: flex-end;
+  padding: 8px 8px 12px;
+}
+
+.blitz-chip-small {
+  font-size: 0.75rem;
+  height: 22px;
+  margin: 2px 0;
+}

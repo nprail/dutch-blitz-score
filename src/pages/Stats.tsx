@@ -20,40 +20,73 @@ import {
 } from '@ionic/react'
 import './Stats.css'
 import { useGame } from '../hooks/useGame'
+import { Game } from './Score'
+
+const getGameWinner = (game: Game): string | null => {
+  if (game.players.length === 0 || game.rounds.length === 0) return null
+  const totals = game.players.map((p) => ({
+    name: p,
+    score: game.rounds.reduce((sum, r) => sum + (r.scores[p] ?? 0), 0),
+  }))
+  return totals.sort((a, b) => b.score - a.score)[0].name
+}
 
 const Stats: React.FC = () => {
-  const { game } = useGame()
+  const { game, history } = useGame()
 
-  const totalRounds = game.rounds.length
+  const allGames = [...history, game]
+  const completedGames = history.length + (game.rounds.length > 0 ? 1 : 0)
+  const allPlayers = [...new Set(allGames.flatMap((g) => g.players))]
+  const totalRounds = allGames.reduce((sum, g) => sum + g.rounds.length, 0)
 
-  const getPlayerTotal = (playerName: string): number => {
-    return game.rounds.reduce(
-      (sum, round) => sum + (round.scores[playerName] ?? 0),
+  const getPlayerTotalScore = (playerName: string): number => {
+    return allGames.reduce(
+      (gameSum, g) =>
+        gameSum +
+        g.rounds.reduce((rSum, r) => rSum + (r.scores[playerName] ?? 0), 0),
       0,
     )
   }
 
+  const getPlayerRoundsPlayed = (playerName: string): number => {
+    return allGames.reduce(
+      (sum, g) =>
+        g.players.includes(playerName) ? sum + g.rounds.length : sum,
+      0,
+    )
+  }
+
+  const getPlayerGamesPlayed = (playerName: string): number => {
+    return allGames.filter(
+      (g) => g.players.includes(playerName) && g.rounds.length > 0,
+    ).length
+  }
+
+  const getPlayerWins = (playerName: string): number => {
+    return allGames.filter((g) => getGameWinner(g) === playerName).length
+  }
+
   const getPlayerAvg = (playerName: string): string => {
-    if (totalRounds === 0) return '0.0'
-    return (getPlayerTotal(playerName) / totalRounds).toFixed(1)
+    const rounds = getPlayerRoundsPlayed(playerName)
+    if (rounds === 0) return '0.0'
+    return (getPlayerTotalScore(playerName) / rounds).toFixed(1)
   }
 
-  const getBlitzCount = (playerName: string): number => {
-    return game.rounds.filter((round) => round.blitzer === playerName).length
+  const getPlayerBlitzes = (playerName: string): number => {
+    return allGames.reduce(
+      (sum, g) =>
+        sum + g.rounds.filter((r) => r.blitzer === playerName).length,
+      0,
+    )
   }
 
-  const getHighScore = (playerName: string): number => {
-    if (game.rounds.length === 0) return 0
-    return Math.max(...game.rounds.map((r) => r.scores[playerName] ?? 0))
-  }
-
-  const sortedPlayers = [...game.players].sort(
-    (a, b) => getPlayerTotal(b) - getPlayerTotal(a),
+  const sortedPlayers = [...allPlayers].sort(
+    (a, b) => getPlayerTotalScore(b) - getPlayerTotalScore(a),
   )
 
   const leader = sortedPlayers[0]
 
-  if (game.players.length === 0) {
+  if (allPlayers.length === 0) {
     return (
       <IonPage>
         <IonHeader>
@@ -100,23 +133,23 @@ const Stats: React.FC = () => {
 
         <IonCard>
           <IonCardHeader>
-            <IonCardTitle>Game Summary</IonCardTitle>
+            <IonCardTitle>All-Time Summary</IonCardTitle>
           </IonCardHeader>
           <IonCardContent>
             <IonGrid>
               <IonRow>
                 <IonCol className="ion-text-center">
-                  <div className="stat-value">{totalRounds}</div>
-                  <div className="stat-label">Rounds</div>
+                  <div className="stat-value">{completedGames}</div>
+                  <div className="stat-label">Games</div>
                 </IonCol>
                 <IonCol className="ion-text-center">
-                  <div className="stat-value">{game.players.length}</div>
-                  <div className="stat-label">Players</div>
+                  <div className="stat-value">{totalRounds}</div>
+                  <div className="stat-label">Rounds</div>
                 </IonCol>
                 {leader && totalRounds > 0 && (
                   <IonCol className="ion-text-center">
                     <div className="stat-value stat-leader">{leader}</div>
-                    <div className="stat-label">Leading</div>
+                    <div className="stat-label">All-Time Leader</div>
                   </IonCol>
                 )}
               </IonRow>
@@ -137,17 +170,18 @@ const Stats: React.FC = () => {
                 <IonLabel>
                   <h2>{playerName}</h2>
                   <p>
-                    Avg {getPlayerAvg(playerName)} pts/round · High{' '}
-                    {getHighScore(playerName)}
+                    Avg {getPlayerAvg(playerName)} pts/round ·{' '}
+                    {getPlayerGamesPlayed(playerName)} games ·{' '}
+                    {getPlayerWins(playerName)} wins
                   </p>
                 </IonLabel>
                 <div slot="end" className="ion-text-right">
                   <IonBadge color="primary">
-                    {getPlayerTotal(playerName)}
+                    {getPlayerTotalScore(playerName)}
                   </IonBadge>
-                  {getBlitzCount(playerName) > 0 && (
+                  {getPlayerBlitzes(playerName) > 0 && (
                     <IonChip color="success" className="blitz-chip">
-                      ⚡ {getBlitzCount(playerName)}
+                      ⚡ {getPlayerBlitzes(playerName)}
                     </IonChip>
                   )}
                 </div>
@@ -155,39 +189,11 @@ const Stats: React.FC = () => {
             ))}
           </IonList>
         </IonCard>
-
-        {totalRounds > 0 && (
-          <IonCard>
-            <IonCardHeader>
-              <IonCardTitle>Round History</IonCardTitle>
-            </IonCardHeader>
-            <IonList lines="full">
-              {[...game.rounds].reverse().map((round, index) => (
-                <IonItem key={round.id}>
-                  <IonLabel>
-                    <h2>Round {totalRounds - index}</h2>
-                    <p>
-                      {Object.entries(round.scores)
-                        .sort(([, a], [, b]) => b - a)
-                        .map(([name, score]) => `${name}: ${score}`)
-                        .join(' · ')}
-                    </p>
-                    {round.blitzer && (
-                      <p>
-                        <IonChip color="success" className="blitz-chip-small">
-                          ⚡ {round.blitzer} blitzed
-                        </IonChip>
-                      </p>
-                    )}
-                  </IonLabel>
-                </IonItem>
-              ))}
-            </IonList>
-          </IonCard>
-        )}
       </IonContent>
     </IonPage>
   )
 }
 
+export { getGameWinner }
 export default Stats
+
